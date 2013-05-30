@@ -53,7 +53,7 @@ echo "
 --glance_api_servers=$host_ip_entry:9292
 --image_service=nova.image.glance.GlanceImageService
 --iscsi_ip_prefix=192.168.22
---sql_connection=mysql://nova:$password@127.0.0.1/nova
+--sql_connection=$DBENGINE://nova:$password@127.0.0.1/nova
 --ec2_url=http://$host_ip_entry:8773/services/Cloud
 --keystone_ec2_url=http://$host_ip_entry:5000/v2.0/ec2tokens
 --api_paste_config=/etc/nova/api-paste.ini
