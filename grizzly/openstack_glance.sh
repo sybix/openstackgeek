@@ -6,6 +6,14 @@ if [ "$(id -u)" != "0" ]; then
    exit 1
 fi
 
+if [ -z $DBENGINE ]
+then
+        export DBENGINE="mysql"
+fi
+if [ $DBENGINE != "mysql" ] && [ $DBENGINE != "postgresql" ]
+then
+        echo "Unknow db engine"
+fi
 # get glance
 apt-get install glance -y
 
@@ -27,8 +35,18 @@ else
    cp /etc/glance/glance-registry.conf /etc/glance/glance-registry.conf.orig
 
    # we sed out the mysql connection here, but then tack on the flavor info later on...
+	if [ $DBENGINE  = "mysql" ]
+	then
+	   sed -e "
+	   /^sql_connection =.*$/s/^.*$/sql_connection = mysql:\/\/glance:$password@127.0.0.1\/glance/
+	   "
+	elif [ $DBENGINE  = "postgresql" ]
+	then
+	   sed -e "
+	   /^sql_connection =.*$/s/^.*$/sql_connection = postgresql:\/\/glance:$password@127.0.0.1\/glance/
+	   "
+	fi
    sed -e "
-   /^sql_connection =.*$/s/^.*$/sql_connection = mysql:\/\/glance:$password@127.0.0.1\/glance/
    s,%SERVICE_TENANT_NAME%,admin,g;
    s,%SERVICE_USER%,admin,g;
    s,%SERVICE_PASSWORD%,$password,g;

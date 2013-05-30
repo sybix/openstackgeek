@@ -7,6 +7,15 @@ if [ "$(id -u)" != "0" ]; then
    exit 1
 fi
 
+if [ -z $DBENGINE ]
+then
+        export DBENGINE="mysql"
+fi
+if [ $DBENGINE != "mysql" ] && [ $DBENGINE != "postgresql" ]
+then
+        echo "Unknow db engine"
+fi
+
 # source the setup file
 . ./setuprc
 
@@ -60,8 +69,18 @@ else
   cp /etc/keystone/keystone.conf /etc/keystone/keystone.conf.orig
 fi
 
+	if [ $DBENGINE  = "mysql" ]
+	then
+	   sed -e "
+	   /^sql_connection =.*$/s/^.*$/sql_connection = mysql:\/\/keystone:$password@127.0.0.1\/keystone/
+	   "
+	elif [ $DBENGINE  = "postgresql" ]
+	then
+	   sed -e "
+	   /^sql_connection =.*$/s/^.*$/sql_connection = postgresql:\/\/keystone:$password@127.0.0.1\/keystone/
+	   "
+	fi
 sed -e "
-/^connection =.*$/s/^.*$/connection = mysql:\/\/keystone:$password@127.0.0.1\/keystone/
 /^# admin_token =.*$/s/^.*$/admin_token = $token/
 " -i /etc/keystone/keystone.conf
 

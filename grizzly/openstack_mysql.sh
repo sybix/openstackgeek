@@ -1,10 +1,18 @@
 #!/bin/bash
 
-dbengine="postgresql"
 # Make sure only root can run our script
 if [ "$(id -u)" != "0" ]; then
    echo "You need to be 'root' dude." 1>&2
    exit 1
+fi
+
+if [ -z $DBENGINE ]
+then
+        export DBENGINE="mysql"
+fi
+if [ $DBENGINE != "mysql" ] && [ $DBENGINE != "postgresql" ]
+then
+        echo "Unknow db engine"
 fi
 
 . ./setuprc
@@ -21,7 +29,7 @@ echo;
 echo "##############################################################################################"
 echo;
 
-if [ $dbengine = "mysql" ]
+if [ $DBENGINE  = "mysql" ]
 then
 	# mysql
 	apt-get install -y mysql-server python-mysqldb
@@ -31,7 +39,7 @@ then
 
 	# restart
 	service mysql restart
-elif [ $dbengine = "postgresql" ]
+elif [ $DBENGINE  = "postgresql" ]
 then
 	# postgresql
 	apt-get install -y postgresql python-psycopg2
@@ -57,7 +65,7 @@ echo;
 service_pass=$SG_SERVICE_PASSWORD
 
 # we create a quantum db irregardless of whether the user wants to install quantum
-if [ $dbengine = "mysql" ]
+if [ $DBENGINE  = "mysql" ]
 then
 	mysql -u root -p <<EOF
 CREATE DATABASE nova;
@@ -73,7 +81,7 @@ CREATE DATABASE quantum;
 GRANT ALL PRIVILEGES ON quantum.* TO 'quantum'@'%' IDENTIFIED BY '$service_pass';
 GRANT ALL PRIVILEGES ON quantum.* TO 'quantum'@'localhost' IDENTIFIED BY '$service_pass';
 EOF
-elif [ $dbengine = "postgresql" ]
+elif [ $DBENGINE  = "postgresql" ]
 then
 	su - postgres -c "psql -c \"CREATE user nova;\""
 	su - postgres -c "psql -c \"ALTER user nova with password '$service_pass';\""
