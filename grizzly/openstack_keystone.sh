@@ -72,12 +72,12 @@ fi
 	if [ $DBENGINE  = "mysql" ]
 	then
 	   sed -e "
-	   /^sql_connection =.*$/s/^.*$/sql_connection = mysql:\/\/keystone:$password@127.0.0.1\/keystone/
+	   /^connection =.*$/s/^.*$/connection = mysql:\/\/keystone:$password@127.0.0.1\/keystone/
 	   "
 	elif [ $DBENGINE  = "postgresql" ]
 	then
 	   sed -e "
-	   /^sql_connection =.*$/s/^.*$/sql_connection = postgresql:\/\/keystone:$password@127.0.0.1\/keystone/
+	   /^connection =.*$/s/^.*$/connection = postgresql:\/\/keystone:$password@127.0.0.1\/keystone/
 	   "
 	fi
 sed -e "

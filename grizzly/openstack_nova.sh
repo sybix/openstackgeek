@@ -6,7 +6,16 @@ if [ "$(id -u)" != "0" ]; then
    exit 1
 fi
 
-host_ip=$(/sbin/ifconfig eth0| sed -n 's/.*inet *addr:\([0-9\.]*\).*/\1/p')
+if [ -z $DBENGINE ]
+then
+        export DBENGINE="mysql"
+fi
+if [ $DBENGINE != "mysql" ] && [ $DBENGINE != "postgresql" ]
+then
+        echo "Unknow db engine"
+fi
+
+host_ip=$(/sbin/ifconfig eth0| sed -n 's/.*inet *adr:\([0-9\.]*\).*/\1/p')
 echo "#############################################################################################################"
 echo "The IP address for eth0 is probably $host_ip".  Keep in mind you need an eth1 for this to work.
 echo "#############################################################################################################"
@@ -21,7 +30,8 @@ read -p "Enter the floating network (eg. 10.0.1.224/27): " floating_range
 read -p "Enter the floating netowrk size (eg. 32): " floating_size
 
 # get nova
-apt-get install nova-api nova-cert nova-common nova-compute nova-compute-kvm nova-doc nova-network nova-objectstore nova-scheduler nova-vncproxy nova-volume python-nova python-novaclient
+apt-get install nova-api nova-cert nova-common nova-compute nova-compute-kvm nova-doc nova-network nova-objectstore nova-scheduler nova-volume python-nova python-novaclient
+#For now  nova-vncproxy can't be installed
 
 . ./stackrc
 password=$SERVICE_PASSWORD
@@ -35,6 +45,7 @@ s,%SERVICE_PASSWORD%,$password,g;
  
 # write out a new nova file
 echo "
+[DEFAULT]
 --dhcpbridge_flagfile=/etc/nova/nova.conf
 --dhcpbridge=/usr/bin/nova-dhcpbridge
 --logdir=/var/log/nova
@@ -74,11 +85,11 @@ echo "
 --network_size=$floating_size
 --flat_network_dhcp_start=$fixed_start
 --flat_injected=False
---force_dhcp_release
+--force_dhcp_release=True
 --iscsi_helper=tgtadm
 --connection_type=libvirt
 --root_helper=sudo nova-rootwrap
---verbose
+--verbose=True
 " > /etc/nova/nova.conf
 
 # sync db

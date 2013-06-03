@@ -37,15 +37,14 @@ else
    # we sed out the mysql connection here, but then tack on the flavor info later on...
 	if [ $DBENGINE  = "mysql" ]
 	then
-	   sed -e "
-	   /^sql_connection =.*$/s/^.*$/sql_connection = mysql:\/\/glance:$password@127.0.0.1\/glance/
-	   "
+	   sed -e "/^sql_connection =.*$/s/^.*$/sql_connection = mysql:\/\/glance:$password@127.0.0.1\/glance/" -i /etc/glance/glance-registry.conf
+	   sed -e "/^sql_connection =.*$/s/^.*$/sql_connection = mysql:\/\/glance:$password@127.0.0.1\/glance/" -i /etc/glance/glance-api.conf
 	elif [ $DBENGINE  = "postgresql" ]
 	then
-	   sed -e "
-	   /^sql_connection =.*$/s/^.*$/sql_connection = postgresql:\/\/glance:$password@127.0.0.1\/glance/
-	   "
+	   sed -e "/^sql_connection =.*$/s/^.*$/sql_connection = postgresql:\/\/glance:$password@127.0.0.1\/glance/" -i /etc/glance/glance-registry.conf
+	   sed -e "/^sql_connection =.*$/s/^.*$/sql_connection = postgresql:\/\/glance:$password@127.0.0.1\/glance/" -i /etc/glance/glance-api.conf
 	fi
+
    sed -e "
    s,%SERVICE_TENANT_NAME%,admin,g;
    s,%SERVICE_USER%,admin,g;
@@ -93,6 +92,7 @@ service glance-registry restart
 sleep 4
 
 # add ubuntu image
+mkdir -p images
 if [ -f images/ubuntu-12.04-server-cloudimg-amd64-disk1.img ]
 then
   glance image-create --name "Ubuntu 12.04 LTS" --is-public true --container-format ovf --disk-format qcow2 --file images/ubuntu-12.04-server-cloudimg-amd64-disk1.img 
