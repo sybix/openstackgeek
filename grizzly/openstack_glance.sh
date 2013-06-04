@@ -6,6 +6,8 @@ if [ "$(id -u)" != "0" ]; then
    exit 1
 fi
 
+. ./stackrc
+
 if [ -z $DBENGINE ]
 then
         export DBENGINE="mysql"
@@ -17,7 +19,6 @@ fi
 # get glance
 apt-get install glance -y
 
-. ./stackrc
 password=$SERVICE_PASSWORD
 
 # edit glance api conf files 

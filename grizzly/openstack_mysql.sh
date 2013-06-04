@@ -6,6 +6,8 @@ if [ "$(id -u)" != "0" ]; then
    exit 1
 fi
 
+. ./setuprc
+
 if [ -z $DBENGINE ]
 then
         export DBENGINE="mysql"
@@ -14,8 +16,6 @@ if [ $DBENGINE != "mysql" ] && [ $DBENGINE != "postgresql" ]
 then
         echo "Unknow db engine"
 fi
-
-. ./setuprc
 
 # throw in a few other services we need installed
 apt-get install rabbitmq-server memcached python-memcache -y
@@ -39,7 +39,7 @@ then
 
 	# restart
 	service mysql restart
-elif [ $DBENGINE  = "postgresql" ]
+elif [ $DBENGINE  = "postresql" ]
 then
 	# postgresql
 	apt-get install -y postgresql python-psycopg2

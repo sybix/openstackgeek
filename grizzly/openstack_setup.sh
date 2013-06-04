@@ -32,6 +32,16 @@ else
 fi
 echo;
 
+#Postresql or MySQL
+echo;
+read -p "Do you want to use postresql instead of MySQL? "
+if [[ $REPLY =~ ^[Yy]$ ]]
+then
+	DBENGINE=postgresql
+else
+	DBENGINE=mysql
+fi
+echo;
 # quantum
 read -p "Do you want to install Quantum? " -n 2 -r
 if [[ $REPLY =~ ^[Yy]$ ]]
@@ -72,6 +82,7 @@ export SG_SERVICE_EMAIL=$email
 export SG_SERVICE_PASSWORD=$password
 export SG_SERVICE_TOKEN=$token
 export SG_SERVICE_REGION=$region
+export DBENGINE=$DBENGINE
 EOF
 
 echo "Using the following for determining your setup type.  Edit 'setuprc' if you don't like what you see. "

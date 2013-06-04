@@ -7,6 +7,9 @@ if [ "$(id -u)" != "0" ]; then
    exit 1
 fi
 
+# source the setup file
+. ./setuprc
+
 if [ -z $DBENGINE ]
 then
         export DBENGINE="mysql"
@@ -16,12 +19,9 @@ then
         echo "Unknow db engine"
 fi
 
-# source the setup file
-. ./setuprc
-
 # grab our IP 
 # comment out the following line and uncomment the one after if you have a different IP in mind
-HOST_IP=$(/sbin/ifconfig eth0| sed -n 's/.*inet *addr:\([0-9\.]*\).*/\1/p')
+HOST_IP=$(/sbin/ifconfig eth0| sed -n 's/.*inet *adr:\([0-9\.]*\).*/\1/p')
 # HOST_IP=10.0.10.100
 
 echo;
@@ -56,6 +56,7 @@ export SERVICE_TOKEN=$token
 export SERVICE_ENDPOINT="http://127.0.0.1:35357/v2.0"
 export SERVICE_TENANT_NAME=service
 export KEYSTONE_REGION=$region
+export DBENGINE=$DBENGINE
 EOF
 
 # source the stackrc file we just created
@@ -73,12 +74,12 @@ fi
 	then
 	   sed -e "
 	   /^connection =.*$/s/^.*$/connection = mysql:\/\/keystone:$password@127.0.0.1\/keystone/
-	   "
+	   " -i /etc/keystone/keystone.conf
 	elif [ $DBENGINE  = "postgresql" ]
 	then
 	   sed -e "
 	   /^connection =.*$/s/^.*$/connection = postgresql:\/\/keystone:$password@127.0.0.1\/keystone/
-	   "
+	   " -i /etc/keystone/keystone.conf
 	fi
 sed -e "
 /^# admin_token =.*$/s/^.*$/admin_token = $token/
