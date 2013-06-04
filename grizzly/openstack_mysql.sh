@@ -39,7 +39,7 @@ then
 
 	# restart
 	service mysql restart
-elif [ $DBENGINE  = "postresql" ]
+elif [ $DBENGINE  = "postgresql" ]
 then
 	# postgresql
 	apt-get install -y postgresql python-psycopg2
